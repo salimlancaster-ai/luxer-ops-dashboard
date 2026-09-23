@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MP Dashboard-Chicago</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:       #0D1B2A;
+  --navy-mid:   #152236;
+  --navy-light: #1E3148;
+  --navy-border:#253d57;
+  --surface:    #F0EDE6;
+  --surface-2:  #E8E4DC;
+  --surface-3:  #DEDAD1;
+  --ink:        #0D1B2A;
+  --ink-mid:    #3D5166;
+  --ink-light:  #6B8099;
+  --teal:       #00C9B1;
+  --teal-dim:   rgba(0,201,177,0.12);
+  --amber:      #F5A623;
+  --amber-dim:  rgba(245,166,35,0.12);
+  --red:        #E53D3D;
+  --red-dim:    rgba(229,61,61,0.12);
+  --green:      #1DAF6E;
+  --green-dim:  rgba(29,175,110,0.12);
+  --blue:       #2E7CF6;
+  --blue-dim:   rgba(46,124,246,0.12);
+  --purple:     #8E44AD;
+  --purple-dim: rgba(142,68,173,0.12);
+  --gold:       #F5C518;
+  --mono:       'JetBrains Mono', monospace;
+  --sans:       'Inter', system-ui, sans-serif;
+  --radius:     8px;
+  --radius-lg:  12px;
+}
+
+html, body { height: 100%; font-family: var(--sans); background: var(--navy); color: var(--surface); overflow: hidden; }
+
+/* ── AUTH GATE ────────────────────────────────────────────── */
+#auth-gate {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+}
+.auth-box {
+  width: 360px;
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: 16px;
+  padding: 40px 36px;
+  text-align: center;
+}
+.auth-logo {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.auth-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--surface);
+  margin-bottom: 6px;
+}
+.auth-sub {
+  font-size: 12px;
+  color: var(--ink-light);
+  margin-bottom: 28px;
+}
+.auth-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--navy-light);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius);
+  color: var(--surface);
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: .1em;
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color .2s;
+}
+.auth-input:focus { border-color: var(--teal); }
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--teal);
+  border: none;
+  border-radius: var(--radius);
+  color: var(--navy);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.auth-btn:hover { opacity: .85; }
+.auth-error {
+  font-size: 12px;
+  color: var(--red);
+  margin-top: 10px;
+  min-height: 16px;
+}
+.auth-hint {
+  font-size: 11px;
+  color: var(--ink-light);
+  margin-top: 16px;
+}
+
+/* ── LAYOUT ───────────────────────────────────────────────── */
+#app { display: flex; height: 100vh; }
+
+/* ── SIDEBAR ──────────────────────────────────────────────── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--navy-mid);
+  border-right: 1px solid var(--navy-border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+.sidebar-brand {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--navy-border);
+}
+.brand-eyebrow {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.brand-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--surface);
+  line-height: 1.2;
+}
+.brand-sub {
+  font-size: 11px;
+  color: var(--ink-light);
+  margin-top: 2px;
+}
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 10px;
+  overflow-y: auto;
+}
+.nav-section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  padding: 10px 10px 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-light);
+  transition: all .15s;
+  margin-bottom: 2px;
+  position: relative;
+  user-select: none;
+}
+.nav-item:hover { background: var(--navy-light); color: var(--surface); }
+.nav-item.active { background: var(--teal-dim); color: var(--teal); }
+.nav-item.active .nav-icon { color: var(--teal); }
+.nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--red);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 99px;
+  min-width: 20px;
+  text-align: center;
+}
+.nav-badge.amber { background: var(--amber); color: var(--navy); }
+.nav-badge.teal  { background: var(--teal);  color: var(--navy); }
+.nav-badge.green { background: var(--green);  color: #fff; }
+
+.pulse-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .4; transform: scale(.7); }
+}
+
+.sidebar-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--navy-border);
+  font-size: 11px;
+  color: var(--ink-light);
+}
+.last-updated {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-light);
+  margin-top: 3px;
+}
+.refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--teal);
+  cursor: pointer;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--sans);
+}
+.refresh-btn:hover { opacity: .7; }
+
+/* ── MAIN CONTENT ─────────────────────────────────────────── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--navy);
+}
+
+/* ── TOPBAR ───────────────────────────────────────────────── */
+.topbar {
+  height: 56px;
+  border-bottom: 1px solid var(--navy-border);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  flex-shrink: 0;
+  background: var(--navy-mid);
+}
+.topbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--surface);
+}
+.topbar-sub {
+  font-size: 12px;
+  color: var(--ink-light);
+  margin-left: 4px;
+}
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--teal);
+  background: var(--teal-dim);
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(0,201,177,.2);
+}
+.search-box {
+  padding: 7px 12px;
+  background: var(--navy-light);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius);
+  color: var(--surface);
+  font-family: var(--sans);
+  font-size: 12px;
+  outline: none;
+  width: 200px;
+  transition: border-color .2s;
+}
+.search-box::placeholder { color: var(--ink-light); }
+.search-box:focus { border-color: var(--teal); }
+
+/* ── CONTENT AREA ─────────────────────────────────────────── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+.content::-webkit-scrollbar { width: 6px; }
+.content::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb { background: var(--navy-border); border-radius: 3px; }
+
+/* ── KPI TILES ────────────────────────────────────────────── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.kpi-tile {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-tile::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.kpi-tile.teal::before  { background: var(--teal); }
+.kpi-tile.red::before   { background: var(--red); }
+.kpi-tile.amber::before { background: var(--amber); }
+.kpi-tile.green::before { background: var(--green); }
+.kpi-tile.blue::before  { background: var(--blue); }
+.kpi-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 10px;
+}
+.kpi-value {
+  font-family: var(--mono);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.kpi-tile.teal  .kpi-value { color: var(--teal); }
+.kpi-tile.red   .kpi-value { color: var(--red); }
+.kpi-tile.amber .kpi-value { color: var(--amber); }
+.kpi-tile.green .kpi-value { color: var(--green); }
+.kpi-tile.blue  .kpi-value { color: var(--blue); }
+.kpi-delta {
+  font-size: 11px;
+  color: var(--ink-light);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.delta-up   { color: var(--green); }
+.delta-down { color: var(--red); }
+
+/* ── METRIC CARDS (2-col) ─────────────────────────────────── */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.metric-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+.metric-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+}
+.metric-value {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--surface);
+  margin-bottom: 4px;
+}
+.metric-sub {
+  font-size: 11px;
+  color: var(--ink-light);
+}
+
+/* ── SECTION HEADERS ──────────────────────────────────────── */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-count {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-light);
+  background: var(--navy-light);
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+.filter-row {
+  display: flex;
+  gap: 6px;
+}
+.filter-btn {
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--navy-border);
+  background: transparent;
+  color: var(--ink-light);
+  font-family: var(--sans);
+  transition: all .15s;
+}
+.filter-btn:hover { border-color: var(--teal); color: var(--teal); }
+.filter-btn.active { background: var(--teal-dim); border-color: var(--teal); color: var(--teal); }
+
+/* ── DATA TABLE ───────────────────────────────────────────── */
+.table-wrap {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+thead th {
+  padding: 10px 14px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  background: var(--navy-light);
+  border-bottom: 1px solid var(--navy-border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+thead th:hover { color: var(--surface); }
+thead th.sort-asc::after  { content: ' ↑'; color: var(--teal); }
+thead th.sort-desc::after { content: ' ↓'; color: var(--teal); }
+tbody tr {
+  border-bottom: 1px solid var(--navy-border);
+  transition: background .1s;
+  cursor: pointer;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--navy-light); }
+td {
+  padding: 11px 14px;
+  color: var(--surface);
+  vertical-align: middle;
+}
+td.mono { font-family: var(--mono); font-size: 11.5px; }
+td.muted { color: var(--ink-light); }
+td.prop { font-weight: 500; }
+
+/* ── STATUS BADGE ─────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge-open        { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(229,61,61,.25); }
+.badge-invest      { background: var(--blue-dim);  color: var(--blue);  border: 1px solid rgba(46,124,246,.25); }
+.badge-resolved    { background: var(--green-dim); color: var(--green); border: 1px solid rgba(29,175,110,.25); }
+.badge-unable      { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,166,35,.25); }
+.badge-overdue     { background: var(--red-dim);   color: var(--red);   border: 1px solid rgba(229,61,61,.25); }
+.badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.badge-open .badge-dot { animation: pulse 1.5s ease-in-out infinite; }
+
+/* ── URGENCY BAR ──────────────────────────────────────────── */
+.urgency-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--navy-border);
+  overflow: hidden;
+  width: 80px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.urgency-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* ── TREND CHART (mini sparkline) ──────────────────────────── */
+.trend-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.trend-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+}
+.trend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.trend-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+}
+.trend-current {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--surface);
+}
+.trend-delta {
+  font-size: 11px;
+  margin-top: 2px;
+  text-align: right;
+}
+canvas.sparkline { width: 100%; height: 56px; display: block; }
+
+/* ── PROPERTY GRID ────────────────────────────────────────── */
+.prop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.prop-card {
+  background: var(--navy-mid);
+  border: 1px solid var(--navy-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.prop-card:hover { border-color: var(--teal); }
+.prop-card.has-overdue { border-color: rgba(229,61,61,.4); }
+.prop-name { font-size: 12px; font-weight: 600; color: var(--surface); margin-bottom: 10px; }
+.prop-stats { display: flex; gap: 12px; }
+.prop-stat { }
+.prop-stat-val {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+}
+.prop-stat-lbl { font-size: 9px; color: var(--ink-light); text-transform: uppercase; letter-spacing: .1em; margin-top: 2px; }
+.prop-rate-bar { height: 3px; background: var(--navy-border); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+.prop-rate-fill { height: 100%; border-radius: 2px; background: var(--teal); }
+
+/* ── DETAIL DRAWER ────────────────────────────────────────── */
+#drawer {
+  position: fixed;
+  top: 0; right: -480px;
+  width: 480px; height: 100vh;
+  background: var(--navy-mid);
+  border-left: 1px solid var(--navy-border);
+  z-index: 500;
+  transition: right .25s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+#drawer.open { right: 0; }
+.drawer-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--navy-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.drawer-title { font-size: 15px; font-weight: 600; color: var(--surface); }
+.drawer-sub   { font-size: 11px; color: var(--ink-light); margin-top: 3px; }
+.drawer-close {
+  background: none; border: none;
+  color: var(--ink-light); font-size: 20px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.drawer-close:hover { color: var(--surface); }
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+.drawer-section { margin-bottom: 20px; }
+.drawer-section-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--navy-border);
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--navy-border);
+  font-size: 13px;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: var(--ink-light); }
+.detail-value { color: var(--surface); font-weight: 500; text-align: right; max-width: 60%; }
+.detail-value.mono { font-family: var(--mono); font-size: 12px; }
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 499;
+  display: none;
+}
+#overlay.visible { display: block; }
+
+/* ── LOADING ──────────────────────────────────────────────── */
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  gap: 12px;
+}
+.spinner {
+  width: 28px; height: 28px;
+  border: 2px solid var(--navy-border);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-family: var(--mono); font-size: 11px; color: var(--ink-light); }
+
+/* ── EMPTY STATE ──────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ink-light);
+  font-size: 13px;
+}
+.empty-icon { font-size: 32px; margin-bottom: 10px; }
+
+/* ── SCROLLBAR ────────────────────────────────────────────── */
+.drawer-body::-webkit-scrollbar { width: 4px; }
+.drawer-body::-webkit-scrollbar-track { background: transparent; }
+.drawer-body::-webkit-scrollbar-thumb { background: var(--navy-border); border-radius: 2px; }
+
+/* ── TABS ─────────────────────────────────────────────────── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <div class="auth-box">
+    <div class="auth-logo">Luxer One</div>
+    <div class="auth-title">Operations Dashboard</div>
+    <div class="auth-sub">Restricted access — team leads only</div>
+    <input class="auth-input" type="password" id="auth-input" placeholder="Enter access code" autocomplete="off">
+    <button class="auth-btn" onclick="checkAuth()">Access Dashboard</button>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-hint">Contact Salim Lancaster for access</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-eyebrow">Luxer One</div>
+      <div class="brand-name">MP Dashboard</div>
+      <div class="brand-sub">Chicago Region</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Views</div>
+      <div class="nav-item active" onclick="switchTab('overview')" id="nav-overview">
+        <span class="nav-icon">⬡</span> Overview
+      </div>
+      <div class="nav-item" onclick="switchTab('open')" id="nav-open">
+        <div class="pulse-dot"></div> Open Inquiries
+        <span class="nav-badge" id="badge-open">—</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('investigating')" id="nav-investigating">
+        <span class="nav-icon">🔍</span> Investigating
+        <span class="nav-badge amber" id="badge-invest">—</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('resolved')" id="nav-resolved">
+        <span class="nav-icon">✓</span> Resolved
+        <span class="nav-badge teal" id="badge-resolved">—</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('unable')" id="nav-unable">
+        <span class="nav-icon">✕</span> Unable to Locate
+        <span class="nav-badge amber" id="badge-unable">—</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('returned')" id="nav-returned">
+        <span class="nav-icon">↩</span> Returned to Sender
+        <span class="nav-badge" style="background:var(--purple)" id="badge-returned">—</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('properties')" id="nav-properties">
+        <span class="nav-icon">▦</span> By Property
+      </div>
+      <div class="nav-item" onclick="switchTab('liaisons')" id="nav-liaisons">
+        <span class="nav-icon">◎</span> By Liaison
+      </div>
+      <div class="nav-section-label" style="margin-top:8px">Trends</div>
+      <div class="nav-item" onclick="switchTab('trends')" id="nav-trends">
+        <span class="nav-icon">↗</span> W/W & M/M
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div>Signed in as <strong>Salim Lancaster</strong></div>
+      <div class="last-updated" id="last-updated">Loading...</div>
+      <button class="refresh-btn" onclick="retryConnection()">↻ Refresh data</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="topbar-title">Overview</span>
+      <span class="topbar-sub" id="topbar-sub">All properties · All time</span>
+      <div class="topbar-right">
+        <input class="search-box" id="search-box" placeholder="Search tracking, unit, name..." oninput="applySearch()" type="text">
+        <div class="live-indicator"><div class="pulse-dot"></div> Live</div>
+      </div>
+    </div>
+
+    <div class="content" id="main-content">
+      <div class="loading-screen"><div class="spinner"></div><div class="loading-text">Loading inquiry data...</div></div>
+    </div>
+  </main>
+</div>
+
+<!-- DETAIL DRAWER -->
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer">
+  <div class="drawer-header">
+    <div>
+      <div class="drawer-title" id="drawer-title">Case Detail</div>
+      <div class="drawer-sub" id="drawer-sub"></div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">×</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+// REPLACE WITH YOUR ACTUAL APPS SCRIPT WEB APP URL AFTER DEPLOYING
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnjPxuRUPQG78eNfxNqjTD6yHWkKq9L-cM3ZSZQm4d-qW0IhsvwbTE5h_g87qSU3DW-A/exec";
+
+// Access codes — update as needed
+const ACCESS_CODES = ["andy2026", "naema2026", "salim2026", "liaison2026"];
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+// ── URL PARAM AUTO-LOGIN & PROPERTY DEEP-LINK ───────────────────────────────
+// Usage: ?auth=liaison2026&property=Presidential+Towers
+(function() {
+  var params   = new URLSearchParams(window.location.search);
+  var authCode = params.get("auth");
+  var propName = params.get("property");
+  if (authCode && ACCESS_CODES.includes(authCode.toLowerCase())) {
+    document.getElementById("auth-gate").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+    if (propName) {
+      // Store property for after data loads
+      window._deepLinkProperty = decodeURIComponent(propName);
+    }
+    loadData();
+  }
+})();
+
+function checkAuth() {
+  const val = document.getElementById("auth-input").value.trim().toLowerCase();
+  if (ACCESS_CODES.includes(val)) {
+    document.getElementById("auth-gate").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+    loadData();
+  } else {
+    document.getElementById("auth-error").textContent = "Incorrect access code. Try again.";
+    document.getElementById("auth-input").value = "";
+  }
+}
+document.getElementById("auth-input").addEventListener("keydown", e => { if (e.key === "Enter") checkAuth(); });
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let ALL_DATA        = [];
+let STATUS_DATA     = [];
+let currentTab      = "overview";
+let currentSort     = { col: null, dir: "asc" };
+let searchQuery     = "";
+let activeFilter    = "all";
+
+// ── DATA LOADING ──────────────────────────────────────────────────────────────
+let _demoMode = false;
+let _retryCount = 0;
+const MAX_RETRIES = 3;
+
+async function loadData(isRetry = false) {
+  if (!isRetry) {
+    document.getElementById("main-content").innerHTML = `<div class="loading-screen"><div class="spinner"></div><div class="loading-text">Fetching live data...</div></div>`;
+  }
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
+    const res = await fetch(APPS_SCRIPT_URL + "?action=getData&t=" + Date.now(), {
+      signal: controller.signal,
+      cache: "no-store"
+    });
+    clearTimeout(timeout);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const json = await res.json();
+    if (!json.inquiries) throw new Error("Invalid response format");
+    ALL_DATA    = json.inquiries  || [];
+    STATUS_DATA = json.statusLog  || [];
+    _demoMode   = false;
+    _retryCount = 0;
+    document.getElementById("last-updated").textContent = "Updated " + new Date().toLocaleTimeString("en-US", {hour:"2-digit",minute:"2-digit"});
+    hideDemoBanner();
+    updateBadges();
+    // Deep-link: expand the requested property after data loads
+    if (window._deepLinkProperty) {
+      expandedProp    = window._deepLinkProperty;
+      propStatusFilter = "all";
+      window._deepLinkProperty = null;
+      switchTab("properties");
+    } else {
+      renderTab(currentTab);
+    }
+  } catch(e) {
+    _retryCount++;
+    if (_retryCount <= MAX_RETRIES) {
+      // Retry after 10 seconds
+      document.getElementById("last-updated").textContent = "Retrying... (" + _retryCount + "/" + MAX_RETRIES + ")";
+      setTimeout(() => loadData(true), 10000);
+      return;
+    }
+    // All retries failed — show error, do NOT fall back to demo data
+    _demoMode = true;
+    _retryCount = 0;
+    document.getElementById("last-updated").textContent = "Connection failed · " + new Date().toLocaleTimeString("en-US", {hour:"2-digit",minute:"2-digit"});
+    showDemoBanner(e.message);
+    // Keep existing data if we have it, otherwise show error state
+    if (ALL_DATA.length === 0) {
+      document.getElementById("main-content").innerHTML = `
+        <div style="margin:40px auto;max-width:500px;text-align:center">
+          <div style="font-size:32px;margin-bottom:16px">⚠</div>
+          <div style="font-size:16px;font-weight:600;color:var(--surface);margin-bottom:8px">Unable to load live data</div>
+          <div style="font-size:13px;color:var(--ink-light);margin-bottom:24px;line-height:1.6">
+            The Apps Script API is not responding. This usually means the web app deployment needs to be refreshed in Google Apps Script.<br><br>
+            Error: ${e.message}
+          </div>
+          <button onclick="retryConnection()" style="padding:10px 20px;background:var(--teal);border:none;border-radius:var(--radius);color:var(--navy);font-weight:600;cursor:pointer;font-family:var(--sans);font-size:13px">Try Again</button>
+          <div style="margin-top:16px;font-size:12px;color:var(--ink-light)">
+            If this persists, go to Apps Script → Deploy → Manage deployments → Edit → New version → Deploy
+          </div>
+        </div>`;
+    }
+  }
+  // Auto-refresh every 5 minutes
+  setTimeout(loadData, 5 * 60 * 1000);
+}
+
+function retryConnection() {
+  _retryCount = 0;
+  _demoMode   = false;
+  loadData();
+}
+
+function showDemoBanner(errorMsg) {
+  let banner = document.getElementById("demo-banner");
+  if (!banner) {
+    banner = document.createElement("div");
+    banner.id = "demo-banner";
+    banner.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:999;background:#C0392B;color:#fff;font-size:12px;font-family:var(--mono);padding:8px 20px;display:flex;align-items:center;gap:12px;";
+    banner.innerHTML = `
+      <span style="font-weight:700">⚠ LIVE DATA CONNECTION FAILED</span>
+      <span id="demo-banner-msg" style="opacity:.8"></span>
+      <button onclick="retryConnection()" style="margin-left:auto;padding:4px 12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:4px;color:#fff;cursor:pointer;font-size:11px;font-family:var(--sans)">Retry</button>
+      <span style="font-size:11px;opacity:.7">Go to Apps Script → Deploy → Manage → Edit → New version → Deploy</span>
+    `;
+    document.body.prepend(banner);
+  }
+  document.getElementById("demo-banner-msg").textContent = errorMsg || "";
+  banner.style.display = "flex";
+}
+
+function hideDemoBanner() {
+  const banner = document.getElementById("demo-banner");
+  if (banner) banner.style.display = "none";
+}
+
+// ── SAMPLE DATA GENERATOR (used when Apps Script not yet connected) ───────────
+function generateSampleData() {
+  const props = ["Presidential Towers","Wolf Point East","Wolf Point West","Tides","Cascade","Shoreham","Aston","The Elizabeth","Atwater","Cirrus","Sandburg Terrace","727 West Madison","Two West","Lake Park Plaza","Optima Signature"];
+  const carriers = ["Amazon","UPS","FedEx","USPS","DHL","Lasership/Ontrac"];
+  const statuses = ["Not Started","Investigating","Resolved","Unable to Locate","Overdue","Overdue, Resolved"];
+  const statusWeights = [0.15, 0.20, 0.40, 0.10, 0.10, 0.05];
+  const names = ["James Carter","Maria Gonzalez","David Kim","Sarah Johnson","Michael Brown","Jennifer Lee","Robert Davis","Emily Wilson","William Martinez","Ashley Taylor","Christopher Anderson","Jessica Thomas","Matthew Jackson","Amanda White","Daniel Harris"];
+  const rows = [];
+  const now = Date.now();
+  for (let i=0; i<294; i++) {
+    const daysAgo = Math.random() * 270;
+    const ts = new Date(now - daysAgo * 86400000);
+    const r = Math.random();
+    let cum = 0, status = "Not Started";
+    for (let s=0; s<statuses.length; s++) { cum += statusWeights[s]; if (r < cum) { status = statuses[s]; break; } }
+    rows.push({
+      timestamp:    ts.toISOString(),
+      email:        "resident" + i + "@email.com",
+      name:         names[i % names.length],
+      property:     props[i % props.length],
+      unit:         Math.floor(Math.random()*40+1) + String.fromCharCode(65+Math.floor(Math.random()*4)),
+      carrier:      carriers[Math.floor(Math.random()*carriers.length)],
+      tracking:     "1Z" + Math.random().toString(36).substr(2,9).toUpperCase(),
+      deliveryDate: new Date(ts - Math.random()*3*86400000).toLocaleDateString(),
+      accessCode:   Math.random()>0.3 ? String(Math.floor(Math.random()*9000+1000)) : "N/A",
+      description:  ["Amazon box medium","FedEx envelope","UPS brown box large","Small white box","Electronic item box"][Math.floor(Math.random()*5)],
+      status:       status
+    });
+  }
+  return rows;
+}
+function generateSampleStatusData() {
+  const liaisons = ["Alexander Kelly","Kierra Williams","Cyrus Allen","Andy Le","Salim Lancaster","Princess Harris","Lamont Williamson","Adrian Hernandez","James Bonds","Juan Gutierrez"];
+  const props = ["Presidential Towers","Wolf Point East","Wolf Point West","Tides","Cascade"];
+  const statuses = ["Investigating","Resolved","Unable to Locate"];
+  const rows = [];
+  const now = Date.now();
+  for (let i=0; i<169; i++) {
+    const daysAgo = Math.random() * 270;
+    rows.push({
+      timestamp: new Date(now - daysAgo*86400000).toISOString(),
+      property:  props[i % props.length],
+      status:    statuses[i % statuses.length],
+      liaison:   liaisons[Math.floor(Math.random()*liaisons.length)],
+      tracking:  "1Z" + Math.random().toString(36).substr(2,9).toUpperCase()
+    });
+  }
+  return rows;
+}
+
+// ── SORT HELPER — most recent status update time for a case ──────────────────
+function getLastUpdated(r) {
+  // Find the most recent status log entry matching this tracking number
+  const logs = STATUS_DATA.filter(s => s.tracking && r.tracking && s.tracking === r.tracking);
+  if (logs.length > 0) {
+    const times = logs.map(s => new Date(s.timestamp)).filter(d => !isNaN(d));
+    if (times.length > 0) return Math.max(...times.map(d => d.getTime()));
+  }
+  // Fall back to submission timestamp
+  return new Date(r.timestamp).getTime() || 0;
+}
+
+// ── COMPUTED METRICS ──────────────────────────────────────────────────────────
+function getMetrics(data) {
+  const total     = data.length;
+  const resolved  = data.filter(r => r.status === "Resolved" || r.status === "Overdue, Resolved").length;
+  const open      = data.filter(r => ["Not Started",""].includes(r.status)).length;
+  const investing = data.filter(r => r.status === "Investigating").length;
+  const overdue   = data.filter(r => r.status.includes("Overdue") && !r.status.includes("Resolved")).length;
+  const unable    = data.filter(r => r.status === "Unable to Locate" || r.status === "Overdue, Unable to Locate").length;
+  const returned  = data.filter(r => r.status === "Returned to Sender" || r.status === "Overdue, Returned to Sender").length;
+  const resRate   = total ? Math.round((resolved/total)*100) : 0;
+
+  // Avg hours to first status update (from status log)
+  let avgHoursToUpdate = null;
+  if (STATUS_DATA.length > 0) {
+    const matched = [];
+    STATUS_DATA.forEach(s => {
+      const inq = data.find(r => r.tracking === s.tracking);
+      if (inq && inq.timestamp && s.timestamp) {
+        const diff = (new Date(s.timestamp) - new Date(inq.timestamp)) / 3600000;
+        if (diff > 0 && diff < 168) matched.push(diff);
+      }
+    });
+    if (matched.length) avgHoursToUpdate = (matched.reduce((a,b)=>a+b,0)/matched.length).toFixed(1);
+  }
+
+  // Avg hours to resolve
+  const resolveTimes = data
+    .filter(r => (r.status==="Resolved"||r.status==="Overdue, Resolved") && r.timestamp && r.resolvedAt)
+    .map(r => (new Date(r.resolvedAt) - new Date(r.timestamp)) / 3600000)
+    .filter(h => h > 0 && h < 720);
+  const avgResolveHrs = resolveTimes.length ? (resolveTimes.reduce((a,b)=>a+b,0)/resolveTimes.length).toFixed(1) : null;
+
+  return { total, resolved, open, investing, overdue, unable, resRate, avgHoursToUpdate, avgResolveHrs };
+}
+
+function getWeeklyTrend() {
+  const now = new Date();
+  const weeks = [];
+  for (let w=7; w>=0; w--) {
+    const start = new Date(now - w*7*86400000);
+    const end   = new Date(now - (w-1)*7*86400000);
+    const slice = ALL_DATA.filter(r => {
+      const ts = new Date(r.timestamp);
+      return ts >= start && ts < end;
+    });
+    const res = slice.filter(r => r.status==="Resolved"||r.status==="Overdue, Resolved").length;
+    weeks.push({ label: start.toLocaleDateString("en-US",{month:"short",day:"numeric"}), total:slice.length, resolved:res, rate: slice.length ? Math.round(res/slice.length*100) : 0 });
+  }
+  return weeks;
+}
+
+function getMonthlyTrend() {
+  const now = new Date();
+  const months = [];
+  for (let m=8; m>=0; m--) {
+    const d = new Date(now.getFullYear(), now.getMonth()-m, 1);
+    const slice = ALL_DATA.filter(r => {
+      const ts = new Date(r.timestamp);
+      return ts.getFullYear()===d.getFullYear() && ts.getMonth()===d.getMonth();
+    });
+    const res = slice.filter(r => r.status==="Resolved"||r.status==="Overdue, Resolved").length;
+    months.push({ label: d.toLocaleDateString("en-US",{month:"short",year:"2-digit"}), total:slice.length, resolved:res, rate: slice.length ? Math.round(res/slice.length*100) : 0 });
+  }
+  return months;
+}
+
+// ── BADGE UPDATES ─────────────────────────────────────────────────────────────
+function updateBadges() {
+  const m   = getMetrics(ALL_DATA);
+  const now = Date.now();
+  // Count open by bucket
+  const openAll     = ALL_DATA.filter(r => ["Not Started","Overdue",""].includes(r.status));
+  const overdueCount    = openAll.filter(r => r.status === "Overdue" || (now - new Date(r.timestamp)) / 3600000 >= 48).length;
+  const approachingCount = openAll.filter(r => r.status !== "Overdue" && (now - new Date(r.timestamp)) / 3600000 >= 24 && (now - new Date(r.timestamp)) / 3600000 < 48).length;
+  const onTrackCount    = openAll.filter(r => r.status !== "Overdue" && (now - new Date(r.timestamp)) / 3600000 < 24).length;
+
+  // Show overdue count in badge (red) — most urgent signal
+  const openBadge = document.getElementById("badge-open");
+  openBadge.textContent = overdueCount > 0 ? overdueCount + " overdue" : openAll.length;
+  openBadge.className   = overdueCount > 0 ? "nav-badge" : "nav-badge teal";
+
+  const investCount = ALL_DATA.filter(r => {
+    if (r.status === "Investigating") return true;
+    if (r.status === "Overdue") return STATUS_DATA.some(s => s.tracking === r.tracking && s.status === "Investigating");
+    return false;
+  }).length;
+  document.getElementById("badge-invest").textContent   = investCount;
+  document.getElementById("badge-resolved").textContent = m.resolved;
+  document.getElementById("badge-unable").textContent   = m.unable;
+  const returnedCount = ALL_DATA.filter(r => r.status==="Returned to Sender"||r.status==="Overdue, Returned to Sender").length;
+  document.getElementById("badge-returned").textContent = returnedCount;
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab   = tab;
+  activeFilter = "all";
+  searchQuery  = "";
+  document.getElementById("search-box").value = "";
+  document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+  const navEl = document.getElementById("nav-"+tab);
+  if (navEl) navEl.classList.add("active");
+  const titles = {
+    overview:"Overview", open:"Open Inquiries", investigating:"Investigating",
+    resolved:"Recently Resolved", unable:"Unable to Locate",
+    properties:"By Property", liaisons:"By Liaison", trends:"W/W & M/M Trends"
+  };
+  const subs = {
+    overview:"All properties · All time", open:"Cases awaiting investigation",
+    investigating:"Active investigations in progress", resolved:"Closed cases — last 30 days",
+    unable:"Cases closed without resolution",
+    returned:"Packages returned to sender by carrier",
+    properties:"Volume and resolution by property", liaisons:"Liaison performance breakdown", trends:"Week-over-week and month-over-month analytics"
+  };
+  document.getElementById("topbar-title").textContent = titles[tab] || tab;
+  document.getElementById("topbar-sub").textContent   = subs[tab] || "";
+  renderTab(tab);
+}
+
+// ── MAIN RENDER ───────────────────────────────────────────────────────────────
+function renderTab(tab) {
+  const el = document.getElementById("main-content");
+  if (tab === "overview")       el.innerHTML = renderOverview();
+  else if (tab === "open")       el.innerHTML = renderOpenTab();
+  else if (tab === "investigating") {
+    // Include cases explicitly marked Investigating
+    // Also include Overdue cases that have an Investigating status log entry
+    // (these were being investigated but got overdue-flagged before the fix)
+    const investingCases = ALL_DATA.filter(r => {
+      if (r.status === "Investigating") return true;
+      if (r.status === "Overdue") {
+        const hasInvestLog = STATUS_DATA.some(s => s.tracking === r.tracking && s.status === "Investigating");
+        return hasInvestLog;
+      }
+      return false;
+    }).sort((a,b) => getLastUpdated(b) - getLastUpdated(a));
+    el.innerHTML = renderTable(investingCases, "investigating");
+  }
+  else if (tab === "resolved")   el.innerHTML = renderTable(ALL_DATA.filter(r => r.status==="Resolved"||r.status==="Overdue, Resolved").sort(function(a,b){ return getLastUpdated(b)-getLastUpdated(a); }).slice(0,60), "resolved");
+  else if (tab === "unable")     el.innerHTML = renderTable(ALL_DATA.filter(r => r.status==="Unable to Locate"||r.status==="Overdue, Unable to Locate").sort(function(a,b){ return getLastUpdated(b)-getLastUpdated(a); }).slice(0,60), "unable");
+  else if (tab === "returned")   el.innerHTML = renderTable(ALL_DATA.filter(r => r.status==="Returned to Sender"||r.status==="Overdue, Returned to Sender").sort(function(a,b){ return getLastUpdated(b)-getLastUpdated(a); }).slice(0,60), "returned");
+  else if (tab === "properties") el.innerHTML = renderProperties();
+  else if (tab === "liaisons")   el.innerHTML = renderLiaisons();
+  else if (tab === "trends")     { el.innerHTML = renderTrends(); drawCharts(); }
+  attachRowClicks();
+}
+
+// ── OVERVIEW ──────────────────────────────────────────────────────────────────
+function renderOverview() {
+  const m  = getMetrics(ALL_DATA);
+  const wt = getWeeklyTrend();
+  const thisW  = wt[wt.length-1];
+  const prevW  = wt[wt.length-2];
+  const wDelta = thisW && prevW ? thisW.rate - prevW.rate : 0;
+  const mt = getMonthlyTrend();
+  const thisM  = mt[mt.length-1];
+  const prevM  = mt[mt.length-2];
+  const mDelta = thisM && prevM ? thisM.rate - prevM.rate : 0;
+
+  const fmtHrs = h => h === null ? "—" : h < 24 ? h + "h" : (h/24).toFixed(1) + "d";
+
+  return `
+  <div class="kpi-row">
+    <div class="kpi-tile teal">
+      <div class="kpi-label">Total Inquiries</div>
+      <div class="kpi-value">${m.total}</div>
+      <div class="kpi-delta">All time · ${ALL_DATA.length > 0 ? new Date(Math.min(...ALL_DATA.map(r=>new Date(r.timestamp)))).toLocaleDateString("en-US",{month:"short",year:"numeric"}) : "—"} to now</div>
+    </div>
+    <div class="kpi-tile green">
+      <div class="kpi-label">Resolved</div>
+      <div class="kpi-value">${m.resolved}</div>
+      <div class="kpi-delta">${m.resRate}% of total</div>
+    </div>
+    <div class="kpi-tile red">
+      <div class="kpi-label">Open / Overdue</div>
+      <div class="kpi-value">${m.open + m.overdue}</div>
+      <div class="kpi-delta">${m.overdue} flagged overdue</div>
+    </div>
+    <div class="kpi-tile amber">
+      <div class="kpi-label">Investigating</div>
+      <div class="kpi-value">${m.investing}</div>
+      <div class="kpi-delta">Active cases</div>
+    </div>
+    <div class="kpi-tile blue">
+      <div class="kpi-label">Unable to Locate</div>
+      <div class="kpi-value">${m.unable}</div>
+      <div class="kpi-delta">Closed unresolved</div>
+    </div>
+    <div class="kpi-tile" style="border-top:2px solid var(--purple)">
+      <div class="kpi-label">Returned to Sender</div>
+      <div class="kpi-value" style="color:var(--purple)">${m.returned||0}</div>
+      <div class="kpi-delta">Carrier returned package</div>
+    </div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-label">This week — resolution rate</div>
+      <div class="metric-value">${thisW ? thisW.rate + "%" : "—"}</div>
+      <div class="metric-sub ${wDelta>0?"delta-up":wDelta<0?"delta-down":""}">${wDelta>=0?"+":""}${wDelta}pp vs last week</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">This month — resolution rate</div>
+      <div class="metric-value">${thisM ? thisM.rate + "%" : "—"}</div>
+      <div class="metric-sub ${mDelta>0?"delta-up":mDelta<0?"delta-down":""}">${mDelta>=0?"+":""}${mDelta}pp vs last month</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Avg time to first update</div>
+      <div class="metric-value">${fmtHrs(m.avgHoursToUpdate)}</div>
+      <div class="metric-sub">from submission to status change</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Avg time to resolve</div>
+      <div class="metric-value">${fmtHrs(m.avgResolveHrs)}</div>
+      <div class="metric-sub">submission to resolved status</div>
+    </div>
+  </div>
+
+  <div class="section-head"><div class="section-title">⚠ Overdue cases requiring action <span class="section-count">${m.overdue}</span></div></div>
+  ${renderTable(ALL_DATA.filter(r => r.status.includes("Overdue") && !r.status.includes("Resolved")).slice(0,10), "open", true)}
+
+  <div class="section-head" style="margin-top:20px"><div class="section-title">Recently active <span class="section-count">Last 10</span></div></div>
+  ${renderTable(ALL_DATA.slice(-10).reverse(), "all", true)}
+  `;
+}
+
+// ── OPEN TAB — THREE SECTIONS ─────────────────────────────────────────────────
+function renderOpenTab() {
+  const openStatuses = ["Not Started", "Overdue", ""];
+  const openAll = ALL_DATA.filter(r => openStatuses.includes(r.status));
+
+  const now = Date.now();
+  const overdue    = openAll.filter(r => {
+    const h = (now - new Date(r.timestamp)) / 3600000;
+    return r.status === "Overdue" || h >= 48;
+  }).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp)); // oldest first = most urgent
+
+  const approaching = openAll.filter(r => {
+    const h = (now - new Date(r.timestamp)) / 3600000;
+    return r.status !== "Overdue" && h >= 24 && h < 48;
+  }).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+  const onTrack = openAll.filter(r => {
+    const h = (now - new Date(r.timestamp)) / 3600000;
+    return r.status !== "Overdue" && h < 24;
+  }).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)); // newest first
+
+  const filtered_overdue    = applyFilters(overdue);
+  const filtered_approaching = applyFilters(approaching);
+  const filtered_ontrack    = applyFilters(onTrack);
+
+  let html = "";
+
+  // ── Section 1: Flagged Overdue ─────────────────────────────────────────────
+  html += `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:3px;height:20px;background:var(--red);border-radius:2px"></div>
+      <span style="font-size:13px;font-weight:600;color:var(--red)">Flagged Overdue</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--ink-light);background:var(--navy-light);padding:2px 8px;border-radius:99px">${filtered_overdue.length}</span>
+      <span style="font-size:11px;color:var(--ink-light)">48+ hours · immediate action needed</span>
+    </div>
+  </div>`;
+
+  if (filtered_overdue.length === 0) {
+    html += `<div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-radius:12px;padding:20px;text-align:center;color:var(--green);font-size:13px;margin-bottom:20px">✓ No overdue cases</div>`;
+  } else {
+    html += renderTableRows(filtered_overdue, "open", "var(--red)");
+  }
+
+  // ── Section 2: Approaching Overdue ────────────────────────────────────────
+  html += `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:24px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:3px;height:20px;background:var(--amber);border-radius:2px"></div>
+      <span style="font-size:13px;font-weight:600;color:var(--amber)">Approaching Overdue</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--ink-light);background:var(--navy-light);padding:2px 8px;border-radius:99px">${filtered_approaching.length}</span>
+      <span style="font-size:11px;color:var(--ink-light)">24–48 hours · update needed soon</span>
+    </div>
+  </div>`;
+
+  if (filtered_approaching.length === 0) {
+    html += `<div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-radius:12px;padding:20px;text-align:center;color:var(--ink-light);font-size:13px;margin-bottom:20px">No cases approaching overdue</div>`;
+  } else {
+    html += renderTableRows(filtered_approaching, "open", "var(--amber)");
+  }
+
+  // ── Section 3: Within 24 Hours ────────────────────────────────────────────
+  html += `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:24px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:3px;height:20px;background:var(--green);border-radius:2px"></div>
+      <span style="font-size:13px;font-weight:600;color:var(--green)">Within 24 Hours</span>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--ink-light);background:var(--navy-light);padding:2px 8px;border-radius:99px">${filtered_ontrack.length}</span>
+      <span style="font-size:11px;color:var(--ink-light)">new · within response window</span>
+    </div>
+  </div>`;
+
+  if (filtered_ontrack.length === 0) {
+    html += `<div style="background:var(--navy-mid);border:1px solid var(--navy-border);border-radius:12px;padding:20px;text-align:center;color:var(--ink-light);font-size:13px;margin-bottom:20px">No new cases in the last 24 hours</div>`;
+  } else {
+    html += renderTableRows(filtered_ontrack, "open", "var(--green)");
+  }
+
+  return html;
+}
+
+// ── TABLE ROWS ONLY (no section header, used by renderOpenTab) ────────────────
+function renderTableRows(data, mode, accentColor) {
+  if (!data || data.length === 0) return "";
+  const headers = ["Submitted","Property","Unit","Name","Carrier","Tracking","Urgency","Status"];
+  const rows = data.map(r => {
+    const ts         = new Date(r.timestamp);
+    const hoursOld   = ((Date.now() - ts) / 3600000).toFixed(0);
+    const dayStr     = ts.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+    const timeStr    = ts.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+    const lastUpd    = getLastUpdated(r);
+    const lastUpdStr = lastUpd > new Date(r.timestamp).getTime()
+      ? new Date(lastUpd).toLocaleDateString("en-US",{month:"short",day:"numeric"}) + "<br><span style='font-size:10px;color:var(--ink-light)'>" + new Date(lastUpd).toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"}) + "</span>"
+      : "—";
+    const urgPct   = Math.min(100, (hoursOld/72)*100);
+    const urgColor = hoursOld>48?"#E53D3D":hoursOld>24?"#F5A623":"#1DAF6E";
+    const urgBar   = `<div class="urgency-bar"><div class="urgency-fill" style="width:${urgPct}%;background:${urgColor}"></div></div> <span style="font-family:var(--mono);font-size:10px;color:${urgColor}">${hoursOld}h</span>`;
+    const badge    = statusBadge(r.status);
+    const idx      = ALL_DATA.indexOf(r);
+    return `<tr data-idx="${idx}" onclick="openDrawer(${idx})">
+      <td class="muted mono">${dayStr}<br><span style="font-size:10px;color:var(--ink-light)">${timeStr}</span></td>
+      <td class="prop">${r.property}</td>
+      <td class="mono muted">${r.unit||"—"}</td>
+      <td>${r.name||"—"}</td>
+      <td class="muted">${r.carrier||"—"}</td>
+      <td class="mono" style="font-size:11px;color:var(--ink-light)">${r.tracking||"—"}</td>
+      <td>${urgBar}</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join("");
+
+  return `<div class="table-wrap" style="margin-bottom:8px">
+    <table>
+      <thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+// ── TABLE RENDER ──────────────────────────────────────────────────────────────
+function renderTable(data, mode, compact=false) {
+  if (!data || data.length === 0) return `<div class="table-wrap"><div class="empty-state"><div class="empty-icon">✓</div>No cases to show</div></div>`;
+
+  const filtered = applyFilters(data);
+
+  const cols = {
+    all:           ["Submitted","Property","Unit","Name","Carrier","Tracking","Status","Last Updated"],
+    open:          ["Submitted","Property","Unit","Name","Carrier","Tracking","Urgency","Status"],
+    investigating: ["Submitted","Property","Unit","Name","Carrier","Tracking","Hours open","Last Updated"],
+    resolved:      ["Submitted","Property","Unit","Name","Carrier","Tracking","Last Updated","Status"],
+    unable:        ["Submitted","Property","Unit","Name","Carrier","Tracking","Last Updated","Status"]
+  };
+  const headers = cols[mode] || cols.all;
+
+  const rows = filtered.map((r,i) => {
+    const ts         = new Date(r.timestamp);
+    const hoursOld   = ((Date.now() - ts) / 3600000).toFixed(0);
+    const dayStr     = ts.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+    const timeStr    = ts.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+    const lastUpd    = getLastUpdated(r);
+    const lastUpdStr = lastUpd > new Date(r.timestamp).getTime()
+      ? new Date(lastUpd).toLocaleDateString("en-US",{month:"short",day:"numeric"}) + "<br><span style='font-size:10px;color:var(--ink-light)'>" + new Date(lastUpd).toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"}) + "</span>"
+      : "—";
+    const urgPct   = Math.min(100, (hoursOld/72)*100);
+    const urgColor = hoursOld>48?"#E53D3D":hoursOld>24?"#F5A623":"#1DAF6E";
+    const badge    = statusBadge(r.status);
+    const urgBar   = `<div class="urgency-bar"><div class="urgency-fill" style="width:${urgPct}%;background:${urgColor}"></div></div> <span style="font-family:var(--mono);font-size:10px;color:${urgColor}">${hoursOld}h</span>`;
+
+    const cellMap = {
+      "Submitted":    `<td class="muted mono">${dayStr}<br><span style="font-size:10px;color:var(--ink-light)">${timeStr}</span></td>`,
+      "Property":     `<td class="prop">${r.property}</td>`,
+      "Unit":         `<td class="mono muted">${r.unit||"—"}</td>`,
+      "Name":         `<td>${r.name||"—"}</td>`,
+      "Carrier":      `<td class="muted">${r.carrier||"—"}</td>`,
+      "Tracking":     `<td class="mono" style="font-size:11px;color:var(--ink-light)">${r.tracking||"—"}</td>`,
+      "Status":       `<td>${badge}</td>`,
+      "Hours open":   `<td>${urgBar}</td>`,
+      "Urgency":      `<td>${urgBar}</td>`,
+      "Resolution":   `<td class="muted mono" style="font-size:11px">${r.status}</td>`,
+      "Last Updated": `<td class="muted mono">${lastUpdStr}</td>`
+    };
+
+    return `<tr data-idx="${ALL_DATA.indexOf(r)}" onclick="openDrawer(${ALL_DATA.indexOf(r)})">${headers.map(h=>cellMap[h]||"<td>—</td>").join("")}</tr>`;
+  }).join("");
+
+  return `
+  <div class="table-wrap">
+    <table>
+      <thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function statusBadge(status) {
+  const map = {
+    "Not Started":      `<span class="badge badge-open"><span class="badge-dot"></span>Open</span>`,
+    "Investigating":    `<span class="badge badge-invest"><span class="badge-dot"></span>Investigating</span>`,
+    "Resolved":         `<span class="badge badge-resolved"><span class="badge-dot"></span>Resolved</span>`,
+    "Overdue, Resolved":`<span class="badge badge-resolved"><span class="badge-dot"></span>Resolved</span>`,
+    "Unable to Locate":        `<span class="badge badge-unable"><span class="badge-dot"></span>Unable</span>`,
+    "Overdue, Unable to Locate":`<span class="badge badge-unable"><span class="badge-dot"></span>Unable</span>`,
+    "Returned to Sender":       `<span class="badge" style="background:var(--purple-dim);color:var(--purple);border:1px solid rgba(142,68,173,.25)"><span class="badge-dot"></span>Returned</span>`,
+    "Overdue, Returned to Sender":`<span class="badge" style="background:var(--purple-dim);color:var(--purple);border:1px solid rgba(142,68,173,.25)"><span class="badge-dot"></span>Returned</span>`,
+    "Overdue":                  `<span class="badge badge-overdue"><span class="badge-dot"></span>Overdue</span>`,
+  };
+  return map[status] || `<span class="badge badge-open">${status||"Unknown"}</span>`;
+}
+
+// ── PROPERTIES ────────────────────────────────────────────────────────────────
+let expandedProp = null;
+let propStatusFilter = "all";
+
+function renderProperties() {
+  const props = [...new Set(ALL_DATA.map(r=>r.property))].sort();
+
+  const cards = props.map(function(prop) {
+    const sub = ALL_DATA.filter(function(r){ return r.property===prop; });
+    const m   = getMetrics(sub);
+    const hasOverdue = m.overdue > 0;
+    const isExpanded = expandedProp === prop;
+
+    let propInqs = sub;
+    if (propStatusFilter === "open")           propInqs = sub.filter(function(r){ return ["Not Started","Overdue",""].includes(r.status); });
+    else if (propStatusFilter === "investigating") propInqs = sub.filter(function(r){
+        if (r.status === "Investigating") return true;
+        if (r.status === "Overdue") {
+          return STATUS_DATA.some(function(s){ return s.tracking === r.tracking && s.status === "Investigating"; });
+        }
+        return false;
+      });
+    else if (propStatusFilter === "resolved")  propInqs = sub.filter(function(r){ return r.status === "Resolved" || r.status === "Overdue, Resolved"; });
+    else if (propStatusFilter === "unable")    propInqs = sub.filter(function(r){ return r.status === "Unable to Locate" || r.status === "Overdue, Unable to Locate"; });
+    else if (propStatusFilter === "returned") propInqs = sub.filter(function(r){ return r.status === "Returned to Sender" || r.status === "Overdue, Returned to Sender"; });
+
+    const filteredCount = propInqs.length;
+    const safeProp = prop.replace(/'/g, "\\'");
+
+    const filterBtns = ["all","open","investigating","resolved","unable","returned"].map(function(f) {
+      const label = f==="all"?"All":f==="open"?"Open":f==="investigating"?"Investigating":f==="resolved"?"Resolved":f==="unable"?"Unable":"Returned";
+      const active = propStatusFilter === f;
+      return `<button onclick="setPropFilter('${f}');event.stopPropagation()" style="padding:3px 10px;border-radius:99px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid ${active?"var(--teal)":"var(--navy-border)"};background:${active?"var(--teal-dim)":"transparent"};color:${active?"var(--teal)":"var(--ink-light)"};font-family:var(--sans)">${label}</button>`;
+    }).join("");
+
+    const tableHtml = filteredCount === 0
+      ? `<div style="padding:24px;text-align:center;color:var(--ink-light);font-size:13px">No ${propStatusFilter} inquiries for this property</div>`
+      : renderTableRows(propInqs.sort(function(a,b){ return getLastUpdated(b) - getLastUpdated(a); }), "all");
+
+    return `<div style="background:var(--navy-mid);border:1px solid ${isExpanded?"var(--teal)":hasOverdue?"rgba(229,61,61,.4)":"var(--navy-border)"};border-radius:12px;margin-bottom:10px;overflow:hidden">
+      <div style="padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px" onclick="toggleProp('${safeProp}')">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--surface);margin-bottom:10px;display:flex;align-items:center;gap:8px">
+            ${prop}
+            ${hasOverdue?`<span style="font-family:var(--mono);font-size:9px;background:var(--red);color:#fff;padding:2px 7px;border-radius:99px">${m.overdue} overdue</span>`:""}
+          </div>
+          <div style="display:flex;gap:16px">
+            <div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--teal)">${m.total}</div><div style="font-size:9px;color:var(--ink-light);text-transform:uppercase;letter-spacing:.1em;margin-top:2px">Total</div></div>
+            <div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--green)">${m.resolved}</div><div style="font-size:9px;color:var(--ink-light);text-transform:uppercase;letter-spacing:.1em;margin-top:2px">Resolved</div></div>
+            <div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:${m.open+m.overdue>0?"var(--red)":"var(--ink-light)"}">${m.open+m.overdue}</div><div style="font-size:9px;color:var(--ink-light);text-transform:uppercase;letter-spacing:.1em;margin-top:2px">Open</div></div>
+            <div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--amber)">${m.unable}</div><div style="font-size:9px;color:var(--ink-light);text-transform:uppercase;letter-spacing:.1em;margin-top:2px">Unable</div></div>
+            <div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--purple)">${m.returned||0}</div><div style="font-size:9px;color:var(--ink-light);text-transform:uppercase;letter-spacing:.1em;margin-top:2px">Returned</div></div>
+            <div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:${m.resRate>=60?"var(--green)":m.resRate>=35?"var(--amber)":"var(--red)"}">${m.resRate}%</div><div style="font-size:9px;color:var(--ink-light);text-transform:uppercase;letter-spacing:.1em;margin-top:2px">Res. Rate</div></div>
+          </div>
+          <div style="height:3px;background:var(--navy-border);border-radius:2px;margin-top:10px;overflow:hidden"><div style="width:${m.resRate}%;height:100%;background:var(--teal);border-radius:2px"></div></div>
+        </div>
+        <div style="color:var(--ink-light);font-size:20px;line-height:1;transition:transform .2s;transform:rotate(${isExpanded?"90":"0"}deg)">›</div>
+      </div>
+      ${isExpanded ? `<div style="border-top:1px solid var(--navy-border)">
+        <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:var(--navy-light)">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--ink-light);text-transform:uppercase;letter-spacing:.1em">${filteredCount} inquiries</span>
+          <div style="display:flex;gap:6px">${filterBtns}</div>
+        </div>
+        ${tableHtml}
+      </div>` : ""}
+    </div>`;
+  }).join("");
+
+  return cards;
+}
+
+function toggleProp(prop) {
+  expandedProp = expandedProp === prop ? null : prop;
+  propStatusFilter = "all";
+  renderTab("properties");
+}
+
+function setPropFilter(filter) {
+  propStatusFilter = filter;
+  renderTab("properties");
+}
+
+function filterByProperty(prop) {
+  expandedProp = prop;
+  propStatusFilter = "open";
+  switchTab("properties");
+}
+
+// ── LIAISONS ──────────────────────────────────────────────────────────────────
+function renderLiaisons() {
+  const liaisons = [...new Set(STATUS_DATA.map(r=>r.liaison))].filter(Boolean).sort();
+  if (!liaisons.length) return `<div class="empty-state"><div class="empty-icon">◎</div>No status log data available</div>`;
+
+  const rows = liaisons.map(name => {
+    const sub  = STATUS_DATA.filter(r=>r.liaison===name);
+    const inv  = sub.filter(r=>r.status==="Investigating").length;
+    const res  = sub.filter(r=>r.status==="Resolved").length;
+    const utl  = sub.filter(r=>r.status==="Unable to Locate").length;
+    const tot  = sub.length;
+    const denom = res + utl;
+    const rate  = denom ? Math.round((res/denom)*100) : 0;
+    const rColor = rate>=60?"var(--green)":rate>=35?"var(--amber)":"var(--red)";
+    const noInv  = inv===0 && tot>2;
+    return `<tr>
+      <td style="font-weight:500">${name}${noInv?` <span class="badge badge-open" style="font-size:9px;padding:1px 6px">No Invest.</span>`:""}</td>
+      <td class="mono" style="color:var(--blue);text-align:center">${inv}</td>
+      <td class="mono" style="color:var(--green);text-align:center;font-weight:600">${res}</td>
+      <td class="mono" style="color:var(--amber);text-align:center">${utl}</td>
+      <td class="mono" style="color:${rColor};text-align:center;font-weight:600">${rate}%</td>
+      <td class="mono muted" style="text-align:center">${tot}</td>
+    </tr>`;
+  }).join("");
+
+  return `
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Liaison</th><th>Investigating</th><th>Resolved</th><th>Unable</th><th>Res. Rate</th><th>Total Actions</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+// ── MONTHLY PROPERTY TABLE ────────────────────────────────────────────────────
+function renderMonthlyPropertyTable() {
+  const props = [...new Set(ALL_DATA.map(r=>r.property))].filter(Boolean).sort();
+
+  function mKey(ts) {
+    const d = new Date(ts);
+    if (isNaN(d)) return null;
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+  }
+  function mLabel(key) {
+    const parts = key.split("-");
+    const names = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return names[parseInt(parts[1])] + " \'" + String(parts[0]).slice(2);
+  }
+
+  const allMonthKeys = [...new Set(ALL_DATA.map(r=>mKey(r.timestamp)).filter(Boolean))].sort();
+  const monthKeys = allMonthKeys.slice(-9);
+
+  if (monthKeys.length === 0) return `<div style="padding:20px;text-align:center;color:var(--ink-light)">No monthly data available</div>`;
+
+  const rColor = (res, tot) => {
+    if (!tot) return "var(--ink-light)";
+    const r = res/tot;
+    return r >= 0.6 ? "var(--green)" : r >= 0.35 ? "var(--amber)" : "var(--red)";
+  };
+
+  const headers = `<tr><th style="text-align:left;min-width:160px">Property</th>${monthKeys.map(k=>`<th>${mLabel(k)}</th>`).join("")}<th>Total</th><th>Rate</th></tr>`;
+
+  const rows = props.map(function(prop) {
+    const sub = ALL_DATA.filter(function(r){ return r.property===prop; });
+    if (!sub.length) return "";
+    const allM = getMetrics(sub);
+
+    const cells = monthKeys.map(function(k) {
+      const slice = sub.filter(function(r){ return mKey(r.timestamp)===k; });
+      const res   = slice.filter(function(r){ return r.status==="Resolved"||r.status==="Overdue, Resolved"; }).length;
+      const ovd   = slice.filter(function(r){ return r.status==="Overdue"||(r.status.includes("Overdue")&&!r.status.includes("Resolved")); }).length;
+      if (!slice.length) return `<td class="mono" style="text-align:center;color:var(--navy-border)">—</td>`;
+      const rc  = rColor(res, slice.length);
+      const pct = Math.round((res/slice.length)*100);
+      return `<td style="text-align:center">
+        <div style="display:inline-flex;flex-direction:column;align-items:center;gap:1px">
+          <span style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--surface)">${slice.length}</span>
+          <span style="font-family:var(--mono);font-size:10px;color:${rc};background:${rc}18;padding:1px 5px;border-radius:3px">${pct}%</span>
+          ${ovd>0?`<span style="font-family:var(--mono);font-size:9px;color:var(--red)">⚠${ovd}</span>`:""}
+        </div>
+      </td>`;
+    }).join("");
+
+    const totColor = rColor(allM.resolved, allM.total);
+    return `<tr><td style="font-weight:500;font-size:12px">${prop}</td>${cells}<td class="mono" style="text-align:center;font-weight:600;color:var(--teal)">${allM.total}</td><td class="mono" style="text-align:center;font-weight:600;color:${totColor}">${allM.resRate}%</td></tr>`;
+  }).filter(Boolean).join("");
+
+  const totalsRow = `<tr style="background:var(--navy-light)"><td style="font-weight:700;font-size:12px;color:var(--surface)">TOTAL</td>${monthKeys.map(function(k){
+    const slice = ALL_DATA.filter(function(r){ return mKey(r.timestamp)===k; });
+    const res = slice.filter(function(r){ return r.status==="Resolved"||r.status==="Overdue, Resolved"; }).length;
+    if (!slice.length) return `<td class="mono" style="text-align:center;color:var(--navy-border)">—</td>`;
+    const rc = rColor(res,slice.length);
+    const pct = Math.round((res/slice.length)*100);
+    return `<td style="text-align:center"><div style="display:inline-flex;flex-direction:column;align-items:center;gap:1px"><span style="font-family:var(--mono);font-size:12px;font-weight:700;color:var(--surface)">${slice.length}</span><span style="font-family:var(--mono);font-size:10px;color:${rc};background:${rc}18;padding:1px 5px;border-radius:3px">${pct}%</span></div></td>`;
+  }).join("")}<td class="mono" style="text-align:center;font-weight:700;color:var(--teal)">${ALL_DATA.length}</td><td class="mono" style="text-align:center;font-weight:700;color:${rColor(getMetrics(ALL_DATA).resolved,ALL_DATA.length)}">${getMetrics(ALL_DATA).resRate}%</td></tr>`;
+
+  return `<div style="font-size:11px;color:var(--ink-light);margin-bottom:8px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+    <span>Each cell: <strong style="color:var(--surface)">volume</strong> + resolution rate</span>
+    <span><span style="color:var(--green)">■</span> ≥60% resolved</span>
+    <span><span style="color:var(--amber)">■</span> 35–60%</span>
+    <span><span style="color:var(--red)">■</span> &lt;35% · needs attention</span>
+    <span style="color:var(--red)">⚠ = overdue cases that month</span>
+  </div>
+  <div class="table-wrap" style="overflow-x:auto"><table style="min-width:700px"><thead>${headers}</thead><tbody>${rows}${totalsRow}</tbody></table></div>`;
+}
+
+// ── TRENDS ────────────────────────────────────────────────────────────────────
+function renderTrends() {
+  const wt = getWeeklyTrend();
+  const mt = getMonthlyTrend();
+  const thisW     = wt[wt.length-1] || {};
+  const prevW     = wt[wt.length-2] || {};
+  const thisM     = mt[mt.length-1] || {};
+  const prevM     = mt[mt.length-2] || {};
+  const wDelta    = (thisW.rate||0)  - (prevW.rate||0);
+  const mDelta    = (thisM.rate||0)  - (prevM.rate||0);
+  const wVolDelta = (thisW.total||0) - (prevW.total||0);
+  const mVolDelta = (thisM.total||0) - (prevM.total||0);
+
+  const rateFlag  = (r) => r >= 60 ? "var(--green)" : r >= 35 ? "var(--amber)" : "var(--red)";
+  const dColor    = (d, up) => d===0 ? "var(--ink-light)" : (up ? (d>0?"var(--green)":"var(--red)") : (d<0?"var(--green)":"var(--red)"));
+  const dIcon     = (d, up) => d===0 ? "→" : (up ? (d>0?"▲":"▼") : (d<0?"▲":"▼"));
+
+  const wRateRow = wt.map((w,i) => {
+    const prev = wt[i-1];
+    const d = prev ? w.rate - prev.rate : null;
+    const col = rateFlag(w.rate);
+    const dStr = d===null?"N/A":(d>0?`+${d}pp`:d<0?`${d}pp`:"–");
+    const dCol = d===null?"var(--ink-light)":d>0?"var(--green)":d<0?"var(--red)":"var(--ink-light)";
+    return `<div style="background:var(--navy-light);border-radius:4px;padding:5px 3px;text-align:center;min-width:48px">
+      <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${col}">${w.rate}%</div>
+      <div style="font-family:var(--mono);font-size:9px;color:${dCol};margin-top:2px">${dStr}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--ink-light);margin-top:2px">${w.label.replace(/ - .*/,"")}</div>
+    </div>`;
+  }).join("");
+
+  const wVolRow = wt.map((w,i) => {
+    const prev = wt[i-1];
+    const d = prev ? w.total - prev.total : null;
+    const dStr = d===null?"N/A":(d>0?`+${d}`:d<0?`${d}`:"–");
+    const dCol = d===null?"var(--ink-light)":d<0?"var(--green)":d>0?"var(--red)":"var(--ink-light)";
+    return `<div style="background:var(--navy-light);border-radius:4px;padding:5px 3px;text-align:center;min-width:48px">
+      <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--blue)">${w.total}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:${dCol};margin-top:2px">${dStr}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--ink-light);margin-top:2px">${w.label.replace(/ - .*/,"")}</div>
+    </div>`;
+  }).join("");
+
+  const mRateRow = mt.map((m,i) => {
+    const prev = mt[i-1];
+    const d = prev ? m.rate - prev.rate : null;
+    const col = rateFlag(m.rate);
+    const dStr = d===null?"N/A":(d>0?`+${d}pp`:d<0?`${d}pp`:"–");
+    const dCol = d===null?"var(--ink-light)":d>0?"var(--green)":d<0?"var(--red)":"var(--ink-light)";
+    return `<div style="background:var(--navy-light);border-radius:4px;padding:5px 3px;text-align:center;min-width:52px">
+      <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:${col}">${m.rate}%</div>
+      <div style="font-family:var(--mono);font-size:9px;color:${dCol};margin-top:2px">${dStr}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--ink-light);margin-top:2px">${m.label}</div>
+    </div>`;
+  }).join("");
+
+  const mVolRow = mt.map((m,i) => {
+    const prev = mt[i-1];
+    const d = prev ? m.total - prev.total : null;
+    const dStr = d===null?"N/A":(d>0?`+${d}`:d<0?`${d}`:"–");
+    const dCol = d===null?"var(--ink-light)":d<0?"var(--green)":d>0?"var(--red)":"var(--ink-light)";
+    return `<div style="background:var(--navy-light);border-radius:4px;padding:5px 3px;text-align:center;min-width:52px">
+      <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--blue)">${m.total}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:${dCol};margin-top:2px">${dStr}</div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--ink-light);margin-top:2px">${m.label}</div>
+    </div>`;
+  }).join("");
+
+  return `
+  <!-- W/W SECTION -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <div style="width:3px;height:20px;background:var(--blue);border-radius:2px"></div>
+    <span style="font-size:13px;font-weight:600;color:var(--surface)">Week-over-Week</span>
+    <span style="font-size:11px;color:var(--ink-light)">${wt[0]?wt[0].label:""} → ${thisW.label||"current week"}</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px">
+    <div class="trend-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light)">Resolution Rate — This Week</div>
+          <div style="font-size:10px;color:var(--ink-light);margin-top:3px">% of cases closed as resolved</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:${rateFlag(thisW.rate||0)};line-height:1">${thisW.rate||0}%</div>
+          <div style="font-size:11px;color:${dColor(wDelta,true)};font-family:var(--mono);margin-top:4px">${dIcon(wDelta,true)} ${wDelta>=0?"+":""}${wDelta}pp vs last week</div>
+        </div>
+      </div>
+      <canvas class="sparkline" id="chart-wrate" data-values="${wt.map(w=>w.rate).join(",")}" data-labels="${wt.map(w=>w.label).join("|")}" data-color="#00C9B1" style="height:52px"></canvas>
+      <div style="display:flex;gap:4px;margin-top:10px;overflow-x:auto;padding-bottom:2px">${wRateRow}</div>
+      <div style="margin-top:8px;font-size:10px;color:var(--ink-light)">
+        <span style="color:var(--green)">■</span> ≥60% · <span style="color:var(--amber)">■</span> 35–60% · <span style="color:var(--red)">■</span> &lt;35% needs attention
+      </div>
+    </div>
+
+    <div class="trend-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light)">Inquiry Volume — This Week</div>
+          <div style="font-size:10px;color:var(--ink-light);margin-top:3px">New cases submitted · lower is better</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--blue);line-height:1">${thisW.total||0}</div>
+          <div style="font-size:11px;color:${dColor(wVolDelta,false)};font-family:var(--mono);margin-top:4px">${dIcon(wVolDelta,false)} ${wVolDelta>=0?"+":""}${wVolDelta} vs last week</div>
+        </div>
+      </div>
+      <canvas class="sparkline" id="chart-wvol" data-values="${wt.map(w=>w.total).join(",")}" data-labels="${wt.map(w=>w.label).join("|")}" data-color="#2E7CF6" style="height:52px"></canvas>
+      <div style="display:flex;gap:4px;margin-top:10px;overflow-x:auto;padding-bottom:2px">${wVolRow}</div>
+      <div style="margin-top:8px;font-size:10px;color:var(--ink-light)">
+        <span style="color:var(--green)">▼</span> volume down = fewer complaints · <span style="color:var(--red)">▲</span> volume up = investigate pattern
+      </div>
+    </div>
+  </div>
+
+  <!-- M/M SECTION -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <div style="width:3px;height:20px;background:var(--teal);border-radius:2px"></div>
+    <span style="font-size:13px;font-weight:600;color:var(--surface)">Month-over-Month</span>
+    <span style="font-size:11px;color:var(--ink-light)">${mt[0]?mt[0].label:""} → ${thisM.label||"current month"} · last 9 months</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px">
+    <div class="trend-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light)">Resolution Rate — This Month</div>
+          <div style="font-size:10px;color:var(--ink-light);margin-top:3px">% of cases closed as resolved</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:${rateFlag(thisM.rate||0)};line-height:1">${thisM.rate||0}%</div>
+          <div style="font-size:11px;color:${dColor(mDelta,true)};font-family:var(--mono);margin-top:4px">${dIcon(mDelta,true)} ${mDelta>=0?"+":""}${mDelta}pp vs last month</div>
+        </div>
+      </div>
+      <canvas class="sparkline" id="chart-mrate" data-values="${mt.map(m=>m.rate).join(",")}" data-labels="${mt.map(m=>m.label).join("|")}" data-color="#00C9B1" style="height:52px"></canvas>
+      <div style="display:flex;gap:4px;margin-top:10px;overflow-x:auto;padding-bottom:2px">${mRateRow}</div>
+      <div style="margin-top:8px;font-size:10px;color:var(--ink-light)">
+        <span style="color:var(--green)">■</span> ≥60% · <span style="color:var(--amber)">■</span> 35–60% · <span style="color:var(--red)">■</span> &lt;35% needs attention
+      </div>
+    </div>
+
+    <div class="trend-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div>
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light)">Inquiry Volume — This Month</div>
+          <div style="font-size:10px;color:var(--ink-light);margin-top:3px">New cases submitted · lower is better</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--blue);line-height:1">${thisM.total||0}</div>
+          <div style="font-size:11px;color:${dColor(mVolDelta,false)};font-family:var(--mono);margin-top:4px">${dIcon(mVolDelta,false)} ${mVolDelta>=0?"+":""}${mVolDelta} vs last month</div>
+        </div>
+      </div>
+      <canvas class="sparkline" id="chart-mvol" data-values="${mt.map(m=>m.total).join(",")}" data-labels="${mt.map(m=>m.label).join("|")}" data-color="#2E7CF6" style="height:52px"></canvas>
+      <div style="display:flex;gap:4px;margin-top:10px;overflow-x:auto;padding-bottom:2px">${mVolRow}</div>
+      <div style="margin-top:8px;font-size:10px;color:var(--ink-light)">
+        <span style="color:var(--green)">▼</span> volume down = fewer complaints · <span style="color:var(--red)">▲</span> volume up = investigate pattern
+      </div>
+    </div>
+  </div>
+
+  <!-- MOM BY PROPERTY -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+    <div style="width:3px;height:20px;background:var(--amber);border-radius:2px"></div>
+    <span style="font-size:13px;font-weight:600;color:var(--surface)">Monthly breakdown by property</span>
+    <span style="font-size:11px;color:var(--ink-light)">Volume + resolution rate per month · ⚠ = overdue cases that month</span>
+  </div>
+  ${renderMonthlyPropertyTable()}
+  `;
+}
+
+// ── SPARKLINE CHARTS ──────────────────────────────────────────────────────────
+function drawCharts() {
+  ["chart-wrate","chart-wvol","chart-mrate","chart-mvol"].forEach(id => {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const vals   = canvas.dataset.values.split(",").map(Number);
+    const labels = canvas.dataset.labels.split("|");
+    const color  = canvas.dataset.color || "#00C9B1";
+    const ctx    = canvas.getContext("2d");
+    const W      = canvas.offsetWidth || 400;
+    const H      = canvas.offsetHeight || 56;
+    canvas.width  = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+
+    const mn   = Math.min(...vals);
+    const mx   = Math.max(...vals);
+    const range = mx - mn || 1;
+    const pad   = 8;
+    const pts   = vals.map((v,i) => ({ x: pad + (i/(vals.length-1))*(W-pad*2), y: H-pad - ((v-mn)/range)*(H-pad*2) }));
+
+    // Fill
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, H);
+    pts.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.lineTo(pts[pts.length-1].x, H);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0,0,0,H);
+    grad.addColorStop(0, color + "30");
+    grad.addColorStop(1, color + "05");
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 1.5;
+    ctx.lineJoin    = "round";
+    ctx.stroke();
+
+    // Last point dot
+    const lp = pts[pts.length-1];
+    ctx.beginPath();
+    ctx.arc(lp.x, lp.y, 3, 0, Math.PI*2);
+    ctx.fillStyle = color;
+    ctx.fill();
+  });
+}
+
+// ── FILTERING & SEARCH ────────────────────────────────────────────────────────
+function applySearch() {
+  searchQuery = document.getElementById("search-box").value.toLowerCase().trim();
+  renderTab(currentTab);
+}
+
+function applyFilters(data) {
+  let filtered = data;
+  if (searchQuery) {
+    filtered = filtered.filter(r =>
+      (r.tracking||"").toLowerCase().includes(searchQuery) ||
+      (r.property||"").toLowerCase().includes(searchQuery) ||
+      (r.name||"").toLowerCase().includes(searchQuery) ||
+      (r.unit||"").toLowerCase().includes(searchQuery) ||
+      (r.carrier||"").toLowerCase().includes(searchQuery)
+    );
+  }
+  return filtered;
+}
+
+// ── DETAIL DRAWER ─────────────────────────────────────────────────────────────
+function openDrawer(idx) {
+  const r     = ALL_DATA[idx];
+  if (!r) return;
+  const ts    = new Date(r.timestamp);
+  const hoursOld = ((Date.now() - ts) / 3600000).toFixed(1);
+  // Match by tracking number, fallback to property+unit if no tracking match
+  let statusLogs = STATUS_DATA.filter(s => s.tracking && r.tracking && s.tracking === r.tracking);
+  if (statusLogs.length === 0 && r.property) {
+    // No tracking match — show nothing rather than wrong history
+    statusLogs = [];
+  }
+  statusLogs = statusLogs.slice(-15).reverse(); // most recent first, cap at 15
+
+  document.getElementById("drawer-title").textContent = r.property || "Case Detail";
+  document.getElementById("drawer-sub").textContent   = "Unit " + (r.unit||"—") + " · " + (r.carrier||"—") + " · " + ts.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"});
+
+  document.getElementById("drawer-body").innerHTML = `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Status</div>
+      <div style="margin-bottom:12px">${statusBadge(r.status)} <span style="font-family:var(--mono);font-size:11px;color:var(--ink-light);margin-left:8px">${hoursOld}h since submission</span></div>
+      <div class="detail-row"><span class="detail-label">Submitted</span><span class="detail-value mono">${ts.toLocaleString("en-US",{month:"short",day:"numeric",year:"numeric",hour:"2-digit",minute:"2-digit"})}</span></div>
+      <div class="detail-row"><span class="detail-label">Hours open</span><span class="detail-value mono" style="color:${hoursOld>48?"var(--red)":hoursOld>24?"var(--amber)":"var(--green)"}">${hoursOld}h</span></div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-title">Update status</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;color:var(--ink-light);display:block;margin-bottom:6px;">Your name</label>
+        <input id="update-liaison-name" type="text" placeholder="Enter your name" style="width:100%;padding:9px 12px;background:var(--navy-light);border:1px solid var(--navy-border);border-radius:var(--radius);color:var(--surface);font-family:var(--sans);font-size:13px;outline:none;" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+        <button onclick="submitStatusUpdate(${idx},'Investigating')" style="padding:10px 6px;background:var(--blue-dim);border:1px solid rgba(46,124,246,.3);border-radius:var(--radius);color:var(--blue);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);">🔍 Investigating</button>
+        <button onclick="submitStatusUpdate(${idx},'Resolved')" style="padding:10px 6px;background:var(--green-dim);border:1px solid rgba(29,175,110,.3);border-radius:var(--radius);color:var(--green);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);">✓ Resolved</button>
+        <button onclick="submitStatusUpdate(${idx},'Unable to Locate')" style="padding:10px 6px;background:var(--amber-dim);border:1px solid rgba(245,166,35,.3);border-radius:var(--radius);color:var(--amber);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);">✕ Unable</button>
+        <button onclick="submitStatusUpdate(${idx},'Returned to Sender')" style="padding:10px 6px;background:var(--purple-dim);border:1px solid rgba(142,68,173,.3);border-radius:var(--radius);color:var(--purple);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--sans);">↩ Returned</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:10px;padding:8px 10px;background:var(--navy-light);border-radius:var(--radius);border:1px solid var(--navy-border)">
+        <input type="checkbox" id="notify-resident" checked style="width:14px;height:14px;accent-color:var(--teal);cursor:pointer;flex-shrink:0;" />
+        <span style="font-size:12px;color:var(--surface)">Send resident notification email</span>
+        <span style="font-size:11px;color:var(--ink-light);margin-left:auto">uncheck to update silently</span>
+      </label>
+      <div id="update-feedback" style="font-size:12px;min-height:18px;font-family:var(--mono)"></div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-title">Resident</div>
+      <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${r.name||"—"}</span></div>
+      <div class="detail-row"><span class="detail-label">Unit</span><span class="detail-value mono">${r.unit||"—"}</span></div>
+      <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value" style="font-size:12px">${r.email||"—"}</span></div>
+    </div>
+
+    <div class="drawer-section">
+      <div class="drawer-section-title">Package details</div>
+      <div class="detail-row"><span class="detail-label">Property</span><span class="detail-value">${r.property||"—"}</span></div>
+      <div class="detail-row"><span class="detail-label">Carrier</span><span class="detail-value">${r.carrier||"—"}</span></div>
+      <div class="detail-row"><span class="detail-label">Tracking</span><span class="detail-value mono" style="font-size:11px">${r.tracking||"—"}</span></div>
+      <div class="detail-row"><span class="detail-label">Delivery date</span><span class="detail-value">${r.deliveryDate||"—"}</span></div>
+      <div class="detail-row"><span class="detail-label">Luxer code</span><span class="detail-value mono">${r.accessCode||"—"}</span></div>
+      <div class="detail-row"><span class="detail-label">Description</span><span class="detail-value">${r.description||"—"}</span></div>
+    </div>
+
+    ${statusLogs.length > 0 ? `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Status history (${statusLogs.length} update${statusLogs.length>1?"s":""})</div>
+      ${statusLogs.map(s => `
+        <div class="detail-row">
+          <span class="detail-label" style="font-size:11px">${new Date(s.timestamp).toLocaleDateString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</span>
+          <span class="detail-value">${statusBadge(s.status)} <span style="font-size:11px;color:var(--ink-light);margin-left:6px">${s.liaison||""}</span></span>
+        </div>`).join("")}
+    </div>` : `
+    <div class="drawer-section">
+      <div class="drawer-section-title">Status history</div>
+      <div style="font-size:12px;color:var(--ink-light);padding:8px 0">No status updates logged yet.</div>
+    </div>`}
+  `;
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("overlay").classList.add("visible");
+}
+
+function closeDrawer() {
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("overlay").classList.remove("visible");
+}
+
+function attachRowClicks() {
+  // Rows already have onclick via renderTable inline handlers
+}
+
+// ── KEYBOARD SHORTCUTS ────────────────────────────────────────────────────────
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") closeDrawer();
+  if (e.key === "/" && document.activeElement !== document.getElementById("search-box")) {
+    e.preventDefault();
+    document.getElementById("search-box")?.focus();
+  }
+});
+
+// ── STATUS UPDATE ──────────────────────────────────────────────────────────────
+async function submitStatusUpdate(idx, newStatus) {
+  const r          = ALL_DATA[idx];
+  const liaisonEl  = document.getElementById("update-liaison-name");
+  const feedbackEl = document.getElementById("update-feedback");
+  const liaison    = (liaisonEl ? liaisonEl.value.trim() : "");
+
+  if (!liaison) {
+    feedbackEl.style.color = "var(--red)";
+    feedbackEl.textContent = "Please enter your name before updating.";
+    liaisonEl && liaisonEl.focus();
+    return;
+  }
+
+  // Determine final status — preserve overdue history
+  const isOverdue = r.status && r.status.includes("Overdue");
+  let finalStatus = newStatus;
+  if (isOverdue) {
+    if (newStatus === "Resolved")              finalStatus = "Overdue, Resolved";
+    else if (newStatus === "Unable to Locate") finalStatus = "Overdue, Unable to Locate";
+      else if (newStatus === "Returned to Sender") finalStatus = "Overdue, Returned to Sender";
+    else if (newStatus === "Investigating")    finalStatus = "Investigating"; // exits overdue, moves to investigating tab
+  }
+
+  const notifyEl  = document.getElementById("notify-resident");
+  const sendEmail = notifyEl ? notifyEl.checked : true;
+
+  feedbackEl.style.color = "var(--teal)";
+  feedbackEl.textContent = sendEmail ? "Saving..." : "Saving silently...";
+
+  try {
+    const params = new URLSearchParams({
+      action:    "updateStatus",
+      tracking:  r.tracking,
+      property:  r.property,
+      status:    finalStatus,
+      liaison:   liaison,
+      email:     r.email || "",
+      unit:      r.unit || "",
+      timestamp: r.timestamp || "",
+      sendEmail: sendEmail ? "1" : "0"
+    });
+    const res  = await fetch(APPS_SCRIPT_URL + "?" + params.toString());
+    const json = await res.json();
+
+    if (json.success) {
+      // Update local data immediately
+      ALL_DATA[idx].status = finalStatus;
+      feedbackEl.style.color = "var(--green)";
+      feedbackEl.textContent = sendEmail
+        ? "✓ Updated to " + finalStatus + " · resident notified"
+        : "✓ Updated to " + finalStatus + " · no email sent";
+      // Push to local status log with exact tracking number
+      STATUS_DATA.push({
+        timestamp: new Date().toISOString(),
+        property:  r.property,
+        status:    newStatus === "Overdue, Resolved" ? "Resolved" : newStatus === "Overdue, Unable to Locate" ? "Unable to Locate" : newStatus,
+        liaison:   liaison,
+        tracking:  r.tracking || ""
+      });
+      updateBadges();
+      // Re-render current tab after short delay — also close drawer if case moved tabs
+      setTimeout(() => {
+        const movedAway = (
+          (currentTab === "open"          && !["Not Started","Overdue",""].includes(finalStatus)) ||
+          (currentTab === "investigating" && finalStatus !== "Investigating") ||
+          (currentTab === "resolved"      && finalStatus !== "Resolved" && finalStatus !== "Overdue, Resolved") ||
+          (currentTab === "unable"        && finalStatus !== "Unable to Locate" && finalStatus !== "Overdue, Unable to Locate")
+        );
+        renderTab(currentTab);
+        if (movedAway) {
+          closeDrawer();
+        } else {
+          openDrawer(idx);
+        }
+      }, 800);
+    } else {
+      feedbackEl.style.color = "var(--red)";
+      feedbackEl.textContent = "Error: " + (json.error || "Update failed");
+    }
+  } catch(err) {
+    feedbackEl.style.color = "var(--red)";
+    feedbackEl.textContent = "Network error — check connection";
+  }
+}
+</script>
+</body>
+</html>
