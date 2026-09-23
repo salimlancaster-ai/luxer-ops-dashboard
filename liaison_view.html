@@ -92,6 +92,9 @@
   .sum-cell:last-child { border-right: none; }
   .sum-num  { font-family: var(--mono); font-size: 24px; font-weight: 700; line-height: 1; }
   .sum-lbl  { font-size: 9px; color: var(--ink); text-transform: uppercase; letter-spacing: .1em; margin-top: 4px; }
+  .sum-arrow{ font-size: 10px; color: var(--teal); margin-top: 4px; opacity: .7; }
+  .sum-cell:hover .sum-num { opacity: .8; }
+  .sum-cell:hover { background: rgba(255,255,255,.03); }
 
   /* Section headers */
   .section-hdr {
@@ -219,22 +222,26 @@
   </div>
 
   <div class="summary">
-    <div class="sum-cell">
+    <a href="#sec-all" class="sum-cell" style="text-decoration:none;cursor:pointer">
       <div class="sum-num" id="sum-total" style="color:var(--teal)">—</div>
       <div class="sum-lbl">Total Open</div>
-    </div>
-    <div class="sum-cell">
+      <div class="sum-arrow">↓</div>
+    </a>
+    <a href="#sec-overdue" class="sum-cell" style="text-decoration:none;cursor:pointer">
       <div class="sum-num" id="sum-overdue" style="color:var(--red)">—</div>
       <div class="sum-lbl">Overdue</div>
-    </div>
-    <div class="sum-cell">
+      <div class="sum-arrow">↓</div>
+    </a>
+    <a href="#sec-invest" class="sum-cell" style="text-decoration:none;cursor:pointer">
       <div class="sum-num" id="sum-invest" style="color:var(--blue)">—</div>
       <div class="sum-lbl">Investigating</div>
-    </div>
-    <div class="sum-cell">
+      <div class="sum-arrow">↓</div>
+    </a>
+    <a href="#sec-ns" class="sum-cell" style="text-decoration:none;cursor:pointer">
       <div class="sum-num" id="sum-ns" style="color:var(--amber)">—</div>
       <div class="sum-lbl">Not Started</div>
-    </div>
+      <div class="sum-arrow">↓</div>
+    </a>
   </div>
 
   <div id="cases-container"></div>
@@ -313,17 +320,19 @@ async function loadCases() {
     }
 
     // Build sections
+    // Add "all" anchor at top of cases container
+    let html = `<div id="sec-all"></div>`;
+
     const sections = [
-      { label: "Overdue — Immediate Action", color: "var(--red)",   items: overdue,  cls: "overdue" },
-      { label: "Investigating",              color: "var(--blue)",  items: invest,   cls: "investigating" },
-      { label: "Not Started",               color: "var(--amber)", items: ns,       cls: "not-started" },
+      { label: "Overdue — Immediate Action", color: "var(--red)",   items: overdue, cls: "overdue",       anchorId: "sec-overdue" },
+      { label: "Investigating",              color: "var(--blue)",  items: invest,  cls: "investigating",  anchorId: "sec-invest"  },
+      { label: "Not Started",               color: "var(--amber)", items: ns,      cls: "not-started",    anchorId: "sec-ns"      },
     ];
 
-    let html = "";
     sections.forEach(sec => {
       if (!sec.items.length) return;
       html += `
-      <div class="section-hdr">
+      <div id="${sec.anchorId}" class="section-hdr">
         <div class="section-bar" style="background:${sec.color}"></div>
         <span class="section-title" style="color:${sec.color}">${sec.label}</span>
         <span class="section-count" style="color:${sec.color}">(${sec.items.length})</span>
