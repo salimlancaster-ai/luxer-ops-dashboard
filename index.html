@@ -2017,7 +2017,7 @@ async function sendRequestInfo(idx) {
     });
 }
 
-function submitStatusUpdate(idx, newStatus) {
+async function submitStatusUpdate(idx, newStatus) {
   const r          = ALL_DATA[idx];
   const liaisonEl  = document.getElementById("update-liaison-name");
   const feedbackEl = document.getElementById("update-feedback");
