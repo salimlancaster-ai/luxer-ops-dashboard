@@ -16,6 +16,7 @@
     --amber:   #D4870A;
     --blue:    #2E7CF6;
     --purple:  #8E44AD;
+    --gray:    #666666;
     --surface: #E8E6E0;
     --ink:     #B0B8C4;
     --border:  rgba(255,255,255,.08);
@@ -80,7 +81,7 @@
   /* Summary bar */
   .summary {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     border-bottom: 1px solid var(--border);
     background: var(--navy-mid);
   }
@@ -115,10 +116,11 @@
     border: 1px solid var(--border);
     overflow: hidden;
   }
-  .case-card.overdue   { border-left: 4px solid var(--red); }
-  .case-card.approaching { border-left: 4px solid var(--amber); }
-  .case-card.investigating { border-left: 4px solid var(--blue); }
-  .case-card.not-started { border-left: 4px solid var(--ink); }
+  .case-card.overdue        { border-left: 4px solid var(--red); }
+  .case-card.approaching    { border-left: 4px solid var(--amber); }
+  .case-card.investigating  { border-left: 4px solid var(--blue); }
+  .case-card.still-investigating { border-left: 4px solid var(--gray); }
+  .case-card.not-started    { border-left: 4px solid var(--ink); }
 
   .card-hdr {
     padding: 14px 16px 10px;
@@ -135,11 +137,12 @@
   .card-badge {
     font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; white-space: nowrap;
   }
-  .badge-overdue      { background: rgba(229,61,61,.15); color: var(--red); }
-  .badge-approaching  { background: rgba(212,135,10,.15); color: var(--amber); }
-  .badge-investigating{ background: rgba(46,124,246,.15); color: var(--blue); }
-  .badge-notstarted   { background: rgba(176,184,196,.12); color: var(--ink); }
-  .badge-returned     { background: rgba(142,68,173,.15); color: var(--purple); }
+  .badge-overdue           { background: rgba(229,61,61,.15);   color: var(--red); }
+  .badge-approaching       { background: rgba(212,135,10,.15);  color: var(--amber); }
+  .badge-investigating     { background: rgba(46,124,246,.15);  color: var(--blue); }
+  .badge-stillinvestigating{ background: rgba(102,102,102,.2);  color: #aaaaaa; }
+  .badge-notstarted        { background: rgba(176,184,196,.12); color: var(--ink); }
+  .badge-returned          { background: rgba(142,68,173,.15);  color: var(--purple); }
 
   .card-sub { font-size: 12px; color: var(--ink); display: flex; gap: 10px; align-items: center; }
   .card-hours { font-family: var(--mono); font-weight: 700; }
@@ -175,10 +178,11 @@
     text-align: center;
     color: #fff;
   }
-  .btn-inv  { background: #1A5276; }
-  .btn-res  { background: #1A7A3A; }
-  .btn-utl  { background: #922B21; }
-  .btn-rts  { background: #7D3C98; }
+  .btn-inv   { background: #1A5276; }
+  .btn-res   { background: #1A7A3A; }
+  .btn-utl   { background: #922B21; }
+  .btn-rts   { background: #7D3C98; }
+  .btn-still { background: #555555; grid-column: 1 / -1; }
 
   /* Empty state */
   .empty {
@@ -232,6 +236,11 @@
       <div class="sum-lbl">Overdue</div>
       <div class="sum-arrow">↓</div>
     </a>
+    <a href="#sec-stillinv" class="sum-cell" style="text-decoration:none;cursor:pointer">
+      <div class="sum-num" id="sum-stillinv" style="color:#aaaaaa">—</div>
+      <div class="sum-lbl">Still Inv.</div>
+      <div class="sum-arrow">↓</div>
+    </a>
     <a href="#sec-invest" class="sum-cell" style="text-decoration:none;cursor:pointer">
       <div class="sum-num" id="sum-invest" style="color:var(--blue)">—</div>
       <div class="sum-lbl">Investigating</div>
@@ -252,7 +261,7 @@
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnjPxuRUPQG78eNfxNqjTD6yHWkKq9L-cM3ZSZQm4d-qW0IhsvwbTE5h_g87qSU3DW-A/exec";
 const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSftqdSP8o0z2UTkOgqWBT2oXWNX1O85E0YPeeeX1sxPq5MZ-A/viewform";
 const VALID_CODES = ["liaison2026","andy2026","naema2026","salim2026"];
-const OPEN_STATUSES = new Set(["Not Started","Overdue","Investigating",""]);
+const OPEN_STATUSES = new Set(["Not Started","Overdue","Investigating","Still Investigating",""]);
 
 const params   = new URLSearchParams(window.location.search);
 const authCode = (params.get("auth") || "").toLowerCase();
@@ -292,19 +301,21 @@ async function loadCases() {
     document.getElementById("hdr-sub").textContent      = new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
     document.getElementById("last-updated").textContent  = "Last updated " + new Date().toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"}) + " · Tap Retry to refresh";
 
-    // Summary
+    // Summary counts
     const overdue  = open.filter(r => r.status === "Overdue");
+    const stillinv = open.filter(r => r.status === "Still Investigating");
     const invest   = open.filter(r => r.status === "Investigating");
     const ns       = open.filter(r => r.status === "Not Started" || r.status === "");
-    document.getElementById("sum-total").textContent   = open.length;
-    document.getElementById("sum-overdue").textContent = overdue.length;
-    document.getElementById("sum-invest").textContent  = invest.length;
-    document.getElementById("sum-ns").textContent      = ns.length;
+    document.getElementById("sum-total").textContent    = open.length;
+    document.getElementById("sum-overdue").textContent  = overdue.length;
+    document.getElementById("sum-stillinv").textContent = stillinv.length;
+    document.getElementById("sum-invest").textContent   = invest.length;
+    document.getElementById("sum-ns").textContent       = ns.length;
 
-    // Sort: overdue first, then by hours descending
+    // Sort: overdue first, then still investigating, then investigating, then not started; within each by hours descending
     open.sort((a,b) => {
-      const order = {Overdue:0,Investigating:1,"Not Started":2,"":2};
-      const ao = order[a.status] ?? 2, bo = order[b.status] ?? 2;
+      const order = {Overdue:0,"Still Investigating":1,Investigating:2,"Not Started":3,"":3};
+      const ao = order[a.status] ?? 3, bo = order[b.status] ?? 3;
       if (ao !== bo) return ao - bo;
       return new Date(a.timestamp) - new Date(b.timestamp);
     });
@@ -320,13 +331,13 @@ async function loadCases() {
     }
 
     // Build sections
-    // Add "all" anchor at top of cases container
     let html = `<div id="sec-all"></div>`;
 
     const sections = [
-      { label: "Overdue — Immediate Action", color: "var(--red)",   items: overdue, cls: "overdue",       anchorId: "sec-overdue" },
-      { label: "Investigating",              color: "var(--blue)",  items: invest,  cls: "investigating",  anchorId: "sec-invest"  },
-      { label: "Not Started",               color: "var(--amber)", items: ns,      cls: "not-started",    anchorId: "sec-ns"      },
+      { label: "Overdue — Immediate Action",  color: "var(--red)",   items: overdue,  cls: "overdue",             anchorId: "sec-overdue"  },
+      { label: "Still Investigating",         color: "#aaaaaa",      items: stillinv, cls: "still-investigating",  anchorId: "sec-stillinv" },
+      { label: "Investigating",               color: "var(--blue)",  items: invest,   cls: "investigating",        anchorId: "sec-invest"   },
+      { label: "Not Started",                 color: "var(--amber)", items: ns,       cls: "not-started",          anchorId: "sec-ns"       },
     ];
 
     sections.forEach(sec => {
@@ -358,16 +369,18 @@ function buildCard(r, cls) {
   const subStr   = ts.toLocaleDateString("en-US",{month:"short",day:"numeric"}) + " at " + ts.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
   const enc      = t => encodeURIComponent(t || "");
   const linkBase = FORM_URL + "?usp=pp_url&entry.1540928277=" + enc(r.tracking) + "&entry.1095817002=" + enc(property);
-  const linkInv  = linkBase + "&entry.1196707356=Investigating";
-  const linkRes  = linkBase + "&entry.1196707356=Resolved";
-  const linkUtl  = linkBase + "&entry.1196707356=Unable+to+Locate";
-  const linkRts  = linkBase + "&entry.1196707356=Returned+to+Sender";
+  const linkInv   = linkBase + "&entry.1196707356=Investigating";
+  const linkRes   = linkBase + "&entry.1196707356=Resolved";
+  const linkUtl   = linkBase + "&entry.1196707356=Unable+to+Locate";
+  const linkRts   = linkBase + "&entry.1196707356=Returned+to+Sender";
+  const linkStill = linkBase + "&entry.1196707356=Still+Investigating";
 
   const badgeMap = {
-    "Overdue":       `<span class="card-badge badge-overdue">● Overdue</span>`,
-    "Investigating": `<span class="card-badge badge-investigating">● Investigating</span>`,
-    "Not Started":   `<span class="card-badge badge-notstarted">● Not Started</span>`,
-    "":              `<span class="card-badge badge-notstarted">● Not Started</span>`,
+    "Overdue":             `<span class="card-badge badge-overdue">● Overdue</span>`,
+    "Investigating":       `<span class="card-badge badge-investigating">● Investigating</span>`,
+    "Still Investigating": `<span class="card-badge badge-stillinvestigating">● Still Investigating</span>`,
+    "Not Started":         `<span class="card-badge badge-notstarted">● Not Started</span>`,
+    "":                    `<span class="card-badge badge-notstarted">● Not Started</span>`,
   };
   const badge = badgeMap[r.status] || `<span class="card-badge badge-notstarted">● ${r.status}</span>`;
 
@@ -418,10 +431,11 @@ function buildCard(r, cls) {
     <div class="card-btns">
       <div class="btn-lbl">Update Status</div>
       <div class="btn-grid">
-        <a href="${linkInv}" class="status-btn btn-inv">Investigating</a>
-        <a href="${linkRes}" class="status-btn btn-res">Resolved</a>
-        <a href="${linkUtl}" class="status-btn btn-utl">Unable to Locate</a>
-        <a href="${linkRts}" class="status-btn btn-rts">Returned to Sender</a>
+        <a href="${linkInv}"   class="status-btn btn-inv">Investigating</a>
+        <a href="${linkRes}"   class="status-btn btn-res">Resolved</a>
+        <a href="${linkUtl}"   class="status-btn btn-utl">Unable to Locate</a>
+        <a href="${linkRts}"   class="status-btn btn-rts">Returned to Sender</a>
+        <a href="${linkStill}" class="status-btn btn-still">Still Investigating (past 72h) — Notify Resident</a>
       </div>
     </div>
   </div>`;
